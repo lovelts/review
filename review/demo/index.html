@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="../lib1/index.js"></script>
+</head>
+
+<body>
+  <button id="btn">点击</button>
+  <button id="btn2">点击</button>
+</body>
+<script>
+  function a() {
+    console.log(12343, this)
+  }
+  a()
+  document.getElementById('btn').onclick = debounce(a, 300)
+
+  // document.getElementById('btn2').onclick = throttle(a, 3000)
+  document.getElementById('btn2').onclick = throttleEnhanced(a, 3000)
+  const state = reactive({
+    a: 1,
+    c: {
+      a: 5
+    }
+  })
+  state.b = 1
+  console.log(2123, state.a, state.c)
+
+  let miaoMiao = {
+    _name: '疫苗',
+    get name() {
+      return this._name;
+    }
+  }
+  let miaoXy = new Proxy(miaoMiao, {
+    get(target, prop, receiver) {
+      return target[prop];
+      // 也可以简写为 Reflect.get(...arguments) 
+    }
+  });
+
+  let kexingMiao = {
+    __proto__: {
+      __proto__: {
+        c: () => {
+          console.log('c')
+        }
+      },
+      a: () => {
+        console.log('a')
+      },
+      b: () => {
+        console.log('b')
+      }
+    },
+    _name: '科兴疫苗'
+  };
+
+  // 结果是科兴疫苗 
+  console.log(kexingMiao.name, kexingMiao.c);
+</script>
+
+</html>

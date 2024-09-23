@@ -1,0 +1,22 @@
+{
+  "name": "package1",
+  "version": "0.0.0",
+  "description": "> TODO: description",
+  "author": "海绵 <litiansheng@cai-inc.com>",
+  "homepage": "",
+  "license": "ISC",
+  "main": "lib/package1.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "publishConfig": {
+    "registry": "http://mirrors-front.cai-inc.com/"
+  },
+  "scripts": {
+    "test": "node ./__tests__/package1.test.js"
+  }
+}
