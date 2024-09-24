@@ -5,6 +5,14 @@
    fiber 架构的出现让计算切片，分片计算 vdom ，渲染，切片渲染。问题：切片了怎么找到父节点、兄弟节点，计算vdom时候会添加 sibling 、children，return。
 
 一次性往页面中插入几万个dom节点，页面会卡顿一下然后一次性展示出来，使用了 requestIdlerCallback 主线程空闲的时候去执行一批任务。
+
+## react 代码执行流程
+
+初始化：jsx 代码会经过 babel parse 阶段 经过词法、语法分析转化为 机器可以理解的 AST，然后transform阶段 经过 jsx 的 plugin 等 转化为一颗新的 AST 转化为 React.createElement 的调用，每个标签调用一次 createElement，每个标签调用一次 方法转化为 vdom；
+渲染过程 ：react 16.8之后采用 fiber 架构来生成 vdom 并完成真实dom的渲染，把 vdom 转化成成一个个的fiber，通过链表的方式串联 return、child、sibing， 通过 requestIdlerCallback 实现利用线程空余时间执行任务，达到中断的效果，实现了workLoop，循环遍历每个fiber，给fiber打上标签 update、PLACEMENT、deletion，执行对应的操作，比如插入、删除、更新，这个过程叫做调和。所有工作单位都搞定后执行 commit 操作，把vdom变化同步到真实dom；
+
+setState 之后开始执行的流程；初始化：会把所有的 hooks 存在顶层的 wipFiber 上，setState 方法触发之后会把当前state和执行方法存入队列当中，重新设置当前工作单位为 currentRoot，然后 workLoop 重新执行，组件重新渲染，重新执行useState函数 会从 wipFiber.alternate.hooks（双缓存中） 取出上一次的值，并且循环执行queue中的方法，完成 state 计算，对应vdom转化真实 dom
+
    
 ## vue 2 defineProperty 和 vue 3 proxy 
 
