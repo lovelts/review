@@ -192,4 +192,28 @@ Object.setPrototypeOf()
 
 ## 项目管理
 
-敏捷开发，每日晨会对称，重要节点分批提前验收，小黑屋高效协作，充分利用时间，先难后易，
+敏捷开发，每日晨会对称，风险把控，重要节点分批提前验收，小黑屋高效协作，充分利用时间，先难后易，
+
+## webpack loader 和 plugin 的区别
+loader 的作用在于转化比如把.sass 转化为css文件
+
+plugin 可以进行更广泛的自定义操作如代码压缩等
+
+## webpack  babel babel-loader
+
+### webpack
+webpack 是一个现代 JavaScript 应用程序的静态模块打包器。（项目打包）
+
+### loader
+
+loader是打包方案，webpack不能识别非js结尾的模块，告知webpack某些特定文件如何打包。官网有loader，开源上也有很多优秀的loader可以使用
+
+### babel
+
+babel 是一个 JavaScript 转码编译器。（把（低版本）浏览器不认识的语法，编译成浏览器认识的语法。）
+
+### babel-loader
+用来连接webpack使用babel的加载器
+
+
+
