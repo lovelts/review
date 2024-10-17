@@ -216,4 +216,62 @@ babel 是一个 JavaScript 转码编译器。（把（低版本）浏览器不�
 用来连接webpack使用babel的加载器
 
 
+## http 1.0 1.1 2.0 区别
+
+HTTP 1.0 浏览器与服务器只保持短暂的连接，每次请求都需要与服务器建立一个TCP连接。
+例如，解析html文件，当发现文件中存在资源文件的时候，这时候又创建单独的链接
+
+最终导致，一个html文件的访问包含了多次的请求和响应，每次请求都需要创建连接、关系连接
+
+这种形式明显造成了性能上的缺陷
+
+HTTP1.1中，默认支持长连接（Connection: keep-alive），即在一个TCP连接上可以传送多个HTTP请求和响应，减少了建立和关闭连接的消耗和延迟
+
++ 在同一个TCP连接里面，客户端可以同时发送多个请求，但是服务端响应还是必须得按顺序返回
+
++ 引入了更多的缓存控制策略，如If-Unmodified-Since, If-Match, If-None-Match等缓存头来控制缓存策略
+
+HTTP/2 采用二进制格式传输数据，而非 HTTP 1.x的文本格式，解析起来更高效
+
+HTTP/2 复用TCP连接，在一个连接里，客户端和浏览器都可以同时发送多个请求或回应，而且不用按照顺序一一对应，这样就避免了”队头堵塞”
++ 请求头压缩
+
+## 怎么开启http 2.0 
+我们使用 http2 得包即可
+
+```js
+const http2 = require('http2');
+const fs = require('fs');
+ 
+// 确保有SSL密钥和证书
+const options = {
+  key: fs.readFileSync('server-key.pem'),
+  cert: fs.readFileSync('server-cert.pem')
+};
+ 
+// 创建一个HTTP/2服务器
+const server = http2.createSecureServer(options, (req, res) => {
+  res.stream.respondWithFile('/path/to/file', {
+    'content-type': 'application/octet-stream',
+    ':status': 200
+  });
+  res.stream.endWithFile('/path/to/file');
+});
+ 
+server.listen(443, () => {
+  console.log('服务器运行在 https://localhost/');
+});
+```
+
+
+## HTTPS和HTTP
+1、http协议：是超文本传输协议，信息是明文传输。如果攻击者截取了Web浏览器和网站服务器之间的传输报文，就可以直接读懂其中的信息。
+
+2、https协议：是具有安全性的ssl/tsl加密传输协议，为浏览器和服务器之间的通信加密，确保数据传输的安全。
+
+默认端口:
+http: 80;
+https: 443;
+
+
 

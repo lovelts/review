@@ -78,3 +78,36 @@ const reactive = (obj) => {
   const proxy = new Proxy(obj, handler)
   return proxy
 }
+
+class queue {
+  constructor(props) {
+    this.limit = props.limit;
+    this.asyncList = [];
+    this.count = 0;
+  }
+  add(func) {
+    new Promise((resolve, reject) => {
+      this.asyncList.push({
+        func,
+        resolve,
+        reject,
+      })
+    })
+    this.exct()
+  }
+  exct() {
+    if(this.asyncList.length > 0 && this.count < this.limit) {
+      this.count++
+      const first = this.asyncList.shift();
+      first.func().then((res) => {
+        this.count--;
+        first.resolve(res)
+        this.exct()
+      }).catch((err) => {
+        this.count--;
+        first.reject(err)
+        this.exct()
+      })
+    }
+  }
+}
