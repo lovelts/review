@@ -194,6 +194,16 @@ Object.setPrototypeOf()
 
 敏捷开发，每日晨会对称，风险把控，重要节点分批提前验收，小黑屋高效协作，充分利用时间，先难后易，
 
+## webpack 流程
+
+以npm run build 为例：
++ 初始化参数：从配置文件 webpack.config.js 和 Shell 语句中读取并合并参数,得出最终的配置对象，用这些参数得到 Compiler 
++ Compiler  加载所有的配置插件，loader 等，开始执行转化
++ 转化完成后会根据模块之间的依赖生成一个个的chunk
++ chunk 会转化为单独文件输出
++ 最后output 输出到指定目录文件中
+
+
 ## webpack loader 和 plugin 的区别
 loader 的作用在于转化比如把.sass 转化为css文件
 

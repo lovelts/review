@@ -111,3 +111,44 @@ class queue {
     }
   }
 }
+
+// new Promise((resolve, reject) => {
+//   console.log(1)
+//   resolve(2)
+//   new Promise((resolve) => {
+//     console.log(5)
+//     resolve(6)
+//   }).then((res) => console.log(res))
+//   console.log(3)
+// }).then(res => console.log(res))
+
+// console.log(4)
+
+
+console.log(1);
+
+setTimeout(() => {
+  console.log(2);
+  Promise.resolve().then(() => {
+    console.log(3);
+  })
+}, 0)
+
+setTimeout(() => {
+  console.log(7);
+  Promise.resolve().then(() => {
+    console.log(8);
+  })
+}, 0)
+
+
+Promise.resolve().then(() => {
+  console.log(4);
+  setTimeout(() => {
+    console.log(5)
+  }, 0)
+})
+
+
+console.log(6);
+// 1 6 4 2 3 5
