@@ -199,7 +199,7 @@ Object.setPrototypeOf()
 以npm run build 为例：
 + 初始化参数：从配置文件 webpack.config.js 和 Shell 语句中读取并合并参数,得出最终的配置对象，用这些参数得到 Compiler 
 + Compiler  加载所有的配置插件，loader 等，开始执行转化
-+ 转化完成后会根据模块之间的依赖生成一个个的chunk
++ 转化完成后会根据模块之间的依赖生成一个个的 chunk
 + chunk 会转化为单独文件输出
 + 最后output 输出到指定目录文件中
 
@@ -285,3 +285,26 @@ https: 443;
 
 
 
+## es module cjs amd umd
+
+CommonJS (简称CJS) 和 ES Modules (简称ESM) 是用于在 JavaScript 中实现模块化的两种不同的规范。
+
+语法差异：
+
+CommonJS 使用 require 来引入模块，使用 module.exports 或 exports 来导出模块。
+ESM 使用 import 来引入模块，使用 export 来导出模块。
+运行时加载 vs 静态加载：
+
+CommonJS 是一种运行时加载的模块系统，模块的加载是在代码执行阶段进行的。模块的导入和导出是同步的。
+ESM 是一种静态加载的模块系统，模块的加载是在代码解析阶段进行的。模块的导入和导出可以是异步的。
+浏览器兼容性：
+
+CommonJS 最初是为服务器端开发设计的，Node.js 采用了 CommonJS 规范。在浏览器端使用 CommonJS 需要使用工具进行转换，如 Browserify 或 Webpack。
+ESM 是 ECMAScript 标准的一部分，从 ES6 开始正式支持，现代浏览器原生支持 ESM。
+静态分析：
+
+ESM 的静态加载特性使得代码可以在解析阶段进行静态分析，从而可以进行更好的优化、摇树优化（tree-shaking）和静态类型检查。
+导入和导出方式：
+
+ESM 支持命名导入和导出，可以导入和导出具体的变量、函数或对象。
+CommonJS 模块的导入和导出是整个模块对象的引用。
