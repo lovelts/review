@@ -226,64 +226,6 @@ babel 是一个 JavaScript 转码编译器。（把（低版本）浏览器不�
 用来连接webpack使用babel的加载器
 
 
-## http 1.0 1.1 2.0 区别
-
-HTTP 1.0 浏览器与服务器只保持短暂的连接，每次请求都需要与服务器建立一个TCP连接。
-例如，解析html文件，当发现文件中存在资源文件的时候，这时候又创建单独的链接
-
-最终导致，一个html文件的访问包含了多次的请求和响应，每次请求都需要创建连接、关系连接
-
-这种形式明显造成了性能上的缺陷
-
-HTTP1.1中，默认支持长连接（Connection: keep-alive），即在一个TCP连接上可以传送多个HTTP请求和响应，减少了建立和关闭连接的消耗和延迟
-
-+ 在同一个TCP连接里面，客户端可以同时发送多个请求，但是服务端响应还是必须得按顺序返回
-
-+ 引入了更多的缓存控制策略，如If-Unmodified-Since, If-Match, If-None-Match等缓存头来控制缓存策略
-
-HTTP/2 采用二进制格式传输数据，而非 HTTP 1.x的文本格式，解析起来更高效
-
-HTTP/2 复用TCP连接，在一个连接里，客户端和浏览器都可以同时发送多个请求或回应，而且不用按照顺序一一对应，这样就避免了”队头堵塞”
-+ 请求头压缩
-
-## 怎么开启http 2.0 
-我们使用 http2 得包即可
-
-```js
-const http2 = require('http2');
-const fs = require('fs');
- 
-// 确保有SSL密钥和证书
-const options = {
-  key: fs.readFileSync('server-key.pem'),
-  cert: fs.readFileSync('server-cert.pem')
-};
- 
-// 创建一个HTTP/2服务器
-const server = http2.createSecureServer(options, (req, res) => {
-  res.stream.respondWithFile('/path/to/file', {
-    'content-type': 'application/octet-stream',
-    ':status': 200
-  });
-  res.stream.endWithFile('/path/to/file');
-});
- 
-server.listen(443, () => {
-  console.log('服务器运行在 https://localhost/');
-});
-```
-
-
-## HTTPS和HTTP
-1、http协议：是超文本传输协议，信息是明文传输。如果攻击者截取了Web浏览器和网站服务器之间的传输报文，就可以直接读懂其中的信息。
-
-2、https协议：是具有安全性的ssl/tsl加密传输协议，为浏览器和服务器之间的通信加密，确保数据传输的安全。
-
-默认端口:
-http: 80;
-https: 443;
-
-
 
 ## es module cjs amd umd
 
@@ -308,3 +250,134 @@ ESM 的静态加载特性使得代码可以在解析阶段进行静态分析，�
 
 ESM 支持命名导入和导出，可以导入和导出具体的变量、函数或对象。
 CommonJS 模块的导入和导出是整个模块对象的引用。
+
+
+## ts 泛型是什么：
+不指定任何具体类型，类型可以再输入的时候确定。
+```js
+function strToArr(str: T): Array<T> {
+    let res = [str]
+    return res
+}
+
+strToArr(1)
+```
+
+## ts interface 和 type 的区别
+
+promise all race allSettled
+
+
+## 浏览器解析 html 的原理
+
+网络层
+
+网络请求处理：当用户输入URL或点击链接时，浏览器发起HTTP请求，服务器响应并返回HTML文件。此过程中，浏览器需要处理DNS查询、建立TCP连接等底层网络通信操作。
+
+预解析优化：为了提高性能，现代浏览器在主线程解析HTML之前会启动一个预解析线程，提前下载HTML中链接的外部CSS和JS文件。这一步骤确保了后续渲染过程的顺畅进行。
+
+
+html 文件从上往下挨着解析
++ html 标签解析构建为 dom 树
++ 遇到 style link，加载 css，css 加载构建 cssom 树
++ 遇到 script 会阻塞 html 的解析，因为 js 会操作修改 dom 和 css 。  
++ + defer dom渲染完成之后才能执行这个脚本
++ + async 脚本下载完成之后会中断dom执行，就会立即执行脚本，完成之后再继续执行 dom
++ 构建渲染树：合成 dom 和 cssom
++ + 合并DOM树和CSSOM树：有了DOM树和CSSOM树后，浏览器将它们组合成渲染树，这个树只包含显示界面所需的DOM节点及对应的样式信息。
++ + 不可见元素的排除：渲染树会忽略例如<head>、<meta>等不可见元素，只关注<body>内的可视化内容。
++ 布局计算
++ + 从根节点开始精确计算每个节点的位置和尺寸，这个过程被称为”回流“或者”重排“。
++ 绘制
++ + 就是把上卖弄回流得到的各个元素绘制成像素点的过程（通俗理解就是画元素的过程），然后在话元素的过程中浏览器会讲页面分为若干个层次堆叠起来（Z 轴），提高绘制效率。
+
+## 中断异步任务
+AbortController  demo
+创建一个 AbortController 实例。
+通过 controller.signal 获取一个信号对象，将其传递给 fetch 请求。
+取消请求：
+
+调用 controller.abort() 来取消请求。这会触发 fetch 请求的 catch 块，并抛出一个 AbortError。
+处理取消：
+
+在 catch 块中检查错误类型，如果是 AbortError，则表示请求已被取消。
+```js
+const fetchData = (signal) => {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', 'https://api.example.com/data', true);
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        resolve(JSON.parse(xhr.responseText));
+      } else {
+        reject(new Error('Network response was not ok'));
+      }
+    };
+    xhr.onerror = () => reject(new Error('Network error'));
+    xhr.onabort = () => reject(new Error('Request aborted'));
+
+    // 监听信号
+    signal.addEventListener('abort', () => {
+      xhr.abort();
+    });
+
+    xhr.send();
+  });
+};
+fetchData(signal).then().catch()
+```
+
+
+## str.length 的原理 
+![alt text](image.png)
+
+
+## 迭代器、这么让一个普通的对象可迭代
+```js
+const myObj = {
+    a: 1,
+    b: 2,
+    c: 3
+}
+
+myObj[Symbol.iterator] = function () {
+    const keys = Object.keys(this)
+    let index = 0
+    return {
+        next: () => {
+            if (index < keys.length) {
+                const key = keys[index];
+                const value = this[key];
+                index++;
+                return { value: [key, value], done: false };
+            } else {
+                return { done: true };
+            }
+        }
+    };
+}
+// 测试对象是否可迭代
+for (let a of myObj) {
+    console.log(123, a);
+}
+
+```
+Map 和 weakmap
+
+键的类型和存储方式
+‌Map‌：Map的键可以是任何类型，包括字符串、数字、对象甚至函数。Map对键值对的存储是强引用，即只要Map对象存在，它的键值对就会一直在内存中，不会被垃圾回收机制回收‌12。
+‌WeakMap‌：WeakMap的键必须是对象类型，不能是其他基本类型。WeakMap对键的引用是弱引用，如果没有其他地方引用这个键对象，那么这个键值对会被垃圾回收机制回收，以此来优化内存‌12。
+垃圾回收机制
+‌Map‌：Map对象中的键和值都会被常规垃圾回收机制回收，只要Map对象存在，其键值对就会一直存在‌2。
+‌WeakMap‌：WeakMap中的键是弱引用，即在对象被垃圾回收时，WeakMap中对应的键值对也会被自动删除。这使得WeakMap非常适合用于缓存或元数据存储，当对象不再被使用时，WeakMap可以自动清除对应的数据，避免内存泄漏‌23。
+迭代能力
+‌Map‌：Map有内置的迭代器，可以通过for...of循环来遍历键值对‌2。
+‌WeakMap‌：WeakMap没有内置的迭代器，因此不能直接遍历键值对‌2。
+应用场景
+‌Map‌：适用于大部分需要存储和管理键值对的情况，尤其是当键值对的数量较大或者需要频繁访问时‌2。
+‌WeakMap‌：适用于需要自动清除的缓存和元数据场景，例如在处理大量临时对象时，避免内存泄漏‌23。
+
+
+React使用非常高效的虚拟DOM算法来实现高效的UI更新。在这个算法中，React需要频繁地遍历并修改DOM节点树，同时又要保证代码的可维护性和可扩展性。
+因为数组在内存中是连续存储的，每次增加或删除元素，都需要重新分配空间并移动其他元素。这个操作的时间复杂度是 O(n)，很不适合频繁的插入、删除、移动元素等需求。
+相反，链表在内存中不需要连续存储，插入、删除元素等操作只需要修改指针，时间复杂度是 O(1)，非常适合React虚拟DOM算法的需求。

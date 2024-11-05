@@ -76,3 +76,25 @@ console.log(
   decodeString("3[a2[c]]")
 )
 
+
+/**
+* @param numsStr:
+* @return:
+*/
+module.exports = function solution(numsStr) {
+  const arr = numsStr.split(',').map(item => Number(item))
+  // 当前值 得出下一个下标 
+  const count = 0
+  const dfs = (index) => {
+      count++
+      if (!arr[index]) return false
+      if (index === arr.length - 1) return true
+      let nextIndex = index + arr[index]
+      if (nextIndex < arr.length) {
+          return dfs(nextIndex)
+      } else {
+          return false
+      }
+  }
+  return dfs(0, 0)
+}

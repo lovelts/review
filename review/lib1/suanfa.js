@@ -7,6 +7,20 @@ const arr = [
   { id: 6, parentId: 4 },
 ]
 
+let root = arr.filter(item => !item.parentId)
+let obj = {}
+arr.forEach(item => {
+  obj[item.id] = { ...item, children: [] }
+})
+arr.forEach(item => {
+  if (obj[item.parentId]) {
+    obj[item.parentId].children.push(item)
+  }
+})
+
+
+
+console.log(2222, JSON.stringify(obj[root.id]))
 // {
 //   "id": 1,
 //     "children": [

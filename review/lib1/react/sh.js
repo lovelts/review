@@ -33,7 +33,7 @@ function performUnitOfWork(callbcak) {
         expirationTime: performance.now() + 5,
     }
     taskQueue.push(unitOfwork)
-    console.log(performance.now() + 5, performance.now())
+    // console.log(performance.now() + 5, performance.now())
     requestHostCallback(workLoop)
 }
 
@@ -79,7 +79,9 @@ if (typeof localSetImmediate === 'function') {
 function requestHostCallback(callback) {
     scheduledHostCallback = callback;
     if (!isMessageLoopRunning) {
+        // 第一个进来开始 loop 
         isMessageLoopRunning = true;
+        // 塞入微任务队列
         schedulePerformWorkUntilDeadline();
     }
 }
@@ -87,11 +89,15 @@ function requestHostCallback(callback) {
 function workLoop(hasTimeRemaining, initialTime) {
     let currentTime = initialTime;
     currentTask = peek(taskQueue);
-    console.log(11111, currentTask, currentTime, shouldYieldToHost())
+    // console.log('workLoop', currentTask, currentTime, shouldYieldToHost())
     while (
         currentTask
     ) {
-        if ((currentTask.expirationTime > currentTime) && (shouldYieldToHost() || !hasTimeRemaining)) {
+        // console.log('workLoop2', currentTask.expirationTime > currentTime,currentTime, shouldYieldToHost())
+
+        if ((shouldYieldToHost() || !hasTimeRemaining)) {
+        console.log(`开启下一个宏任务继续执行剩余任务`);
+            // console.log('time', currentTask.expirationTime > currentTime, shouldYieldToHost())
             break
         } else {
             currentTask.callbcak()
@@ -116,14 +122,14 @@ function handleTask() {
         const btn2Attr = document.getElementById('btn2').attributes;
         const btn3Attr = document.getElementById('btn3').attributes;
     }
-    if(taskIndex >= taskTotal) {
-        console.log(`任务调度完成，用时：`, Date.now() - start, 'ms!');
+    if (taskIndex >= taskTotal) {
+        // console.log(`任务调度    完成，用时：`, Date.now() - start, 'ms!');
     }
 }
 
 while (taskIndex <= taskTotal) {
-    // performUnitOfWork(handleTask)
-    handleTask() 
+    performUnitOfWork(handleTask)
+    // handleTask() 
     taskIndex++
 }
 
